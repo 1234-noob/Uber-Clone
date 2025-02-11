@@ -180,4 +180,108 @@ Logs in an existing user using email and password. On success, returns a JWT tok
 }
 ```
 
+## User Profile Endpoint
+
+### Endpoint
+
+**GET** /users/profile
+
+### Description
+
+Retrieves the profile details of the authenticated user.
+
+### Request
+
+- **Headers:** Must include a valid JWT token (in cookies or Authorization header).
+
+### Success Response
+
+- **Status Code:** 200 OK
+- **Body:**
+
+```json
+{
+  "user": {
+    "_id": "string",
+    "fullname": {
+      "firstname": "string",
+      "lastname": "string"
+    },
+    "email": "string"
+    // ...other user details...
+  }
+}
+```
+
+### Example Success Response
+
+```json
+{
+  "user": {
+    "_id": "605c3c2b9e7b9b0015b4c789",
+    "fullname": {
+      "firstname": "Charlie",
+      "lastname": "Brown"
+    },
+    "email": "charlie.brown@example.com"
+    // ...other user details...
+  }
+}
+```
+
+### Error Response
+
+- **Status Code:** 401 Unauthorized
+- **Body:**
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+## User Logout Endpoint
+
+### Endpoint
+
+**GET** /users/logout
+
+### Description
+
+Logs out the authenticated user by clearing the authentication token cookie and blacklisting the token.
+
+### Request
+
+- **Headers:** Must include a valid JWT token (in cookies or Authorization header).
+
+### Success Response
+
+- **Status Code:** 200 OK
+- **Body:**
+
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+### Example Success Response
+
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+### Error Response
+
+- **Status Code:** 401 Unauthorized
+- **Body:**
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
 <!-- ...existing docs or notes... -->
