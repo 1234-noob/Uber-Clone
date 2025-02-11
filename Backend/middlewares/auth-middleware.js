@@ -1,18 +1,13 @@
 require("dotenv").config();
 const userModel = require("../models/user");
 const BlacklistToken = require("../models/blacklistToken");
-const bcrypt = require("bcrypt");
+
 const jwt = require("jsonwebtoken");
 
 
 const authUser = async (req,res,next) => {
-    if (req.cookies.token) {
-        token = req.cookies.token;
-    } 
-    // Check if authorization header exists
-    else if (req.headers.authorization) {
-        const token = req.headers.authorization.split(" ")[1];
-    }
+    const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+    
     if(!token){
         return res.status(401).json({message:"Unauthorized"})
     }
