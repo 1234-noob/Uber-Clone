@@ -307,9 +307,10 @@ Registers a new captain. Validates the captain's details including personal and 
   "email": "string (valid email)",
   "password": "string (min: 8 characters)",
   "vehicle": {
-    "make": "string",
-    "model": "string",
-    "year": "number"
+    " color": "string",
+    "plate": "string",
+    "capacity": "number",
+    "vehicleType": "string"
   }
 }
 ```
