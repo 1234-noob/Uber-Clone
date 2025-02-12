@@ -1,10 +1,10 @@
 # API Documentation
 
-## User Registration Endpoint
+## Users Routes
 
-### Endpoint
+### User Registration Endpoint
 
-**POST** /users/register
+**Endpoint:** POST users/register
 
 ### Description
 
@@ -284,4 +284,111 @@ Logs out the authenticated user by clearing the authentication token cookie and 
 }
 ```
 
-<!-- ...existing docs or notes... -->
+## Captain Routes
+
+### Captain Registration Endpoint
+
+**Endpoint:** POST captain/register
+
+**Description:**  
+Registers a new captain. Validates the captain's details including personal and vehicle information. On success, returns a JWT token and the created captain object.
+
+**Request:**
+
+- Content-Type: application/json
+- Body:
+
+```json
+{
+  "fullname": {
+    "firstname": "string (min: 3 characters)",
+    "lastname": "string (min: 3 characters)"
+  },
+  "email": "string (valid email)",
+  "password": "string (min: 8 characters)",
+  "vehicle": {
+    "make": "string",
+    "model": "string",
+    "year": "number"
+  }
+}
+```
+
+**Success Response:**
+
+- Status Code: 201 Created
+- Body:
+
+```json
+{
+  "token": "string (JWT token)",
+  "captain": {
+    "_id": "string",
+    "fullname": {
+      "firstname": "string",
+      "lastname": "string"
+    },
+    "email": "string",
+    "vehicle": {
+      "make": "string",
+      "model": "string",
+      "year": "number"
+    }
+    // ...other captain details...
+  }
+}
+```
+
+**Example Success Response:**
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "captain": {
+    "_id": "605c3c2b9e7b9b0015b4c123",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com",
+    "vehicle": {
+      "make": "Toyota",
+      "model": "Camry",
+      "year": 2020
+    }
+    // ...other captain details...
+  }
+}
+```
+
+**Error Response:**
+
+- Status Code: 400 Bad Request
+- Body:
+
+```json
+{
+  "error": [
+    {
+      "msg": "Error message",
+      "param": "field",
+      "location": "body"
+    }
+    // ...additional errors if present...
+  ]
+}
+```
+
+**Example Error Response:**
+
+```json
+{
+  "error": [
+    {
+      "msg": "Invalid email format",
+      "param": "email",
+      "location": "body"
+    }
+  ]
+}
+```
