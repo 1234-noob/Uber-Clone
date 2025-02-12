@@ -1,7 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
-const { registerCaptain } = require("../controller/captain-controller");
+const {
+  registerCaptain,
+  loginCaptain,
+  getCaptainProfile,
+  logoutCaptain,
+} = require("../controller/captain-controller");
+const { authCaptain } = require("../middlewares/auth-middleware");
 
 router.post(
   "/register",
@@ -31,30 +37,27 @@ router.post(
     body("vehicle.capacity")
       .isInt({ min: 1 })
       .withMessage("Capacity must be atleast 1"),
-    body("vehicle.vehicleType").custom((value, { req }) => {
-      const capacity = req.body.vehicle?.capacity;
-      if (!capacity) {
-        throw new Error("Capacity is required to validate vehicle type");
-      }
-      if (Number(capacity) === 1) {
-        if (["car", "bike", "auto"].includes(value)) return true;
-        throw new Error(
-          "For a capacity of 1, vehicle type must be car, bike, or auto"
-        );
-      } else if (Number(capacity) < 3) {
-        if (["car", "auto"].includes(value)) return true;
-        throw new Error(
-          "For a capacity less than 3, vehicle type must be car or auto"
-        );
-      } else {
-        if (value === "car") return true;
-        throw new Error(
-          "For a capacity of 3 or more, vehicle type must be car"
-        );
-      }
-    }),
+    body("vehicle.vehicleType")
+      .isIn(["car", "motorcycle", "auto"])
+      .withMessage("Invalid vehicle type"),
   ],
   registerCaptain
 );
 
+router.post(
+  "/login",
+  [
+    body("email").isEmail().withMessage("Invalid email"),
+    body("password")
+      .isLength({
+        min: 8,
+      })
+      .withMessage("Password must be 8 characters long"),
+  ],
+  loginCaptain
+);
+
+router.get("/profile", authCaptain, getCaptainProfile);
+
+router.get("/logout", authCaptain, logoutCaptain);
 module.exports = router;

@@ -284,11 +284,11 @@ Logs out the authenticated user by clearing the authentication token cookie and 
 }
 ```
 
-## Captain Routes
+## Captains Routes
 
-### Captain Registration Endpoint
+### Captains Registration Endpoint
 
-**Endpoint:** POST captain/register
+**Endpoint:** POST captains/register
 
 **Description:**  
 Registers a new captain. Validates the captain's details including personal and vehicle information. On success, returns a JWT token and the created captain object.
@@ -392,5 +392,216 @@ Registers a new captain. Validates the captain's details including personal and 
       "location": "body"
     }
   ]
+}
+```
+
+### Captains Login Endpoint
+
+**Endpoint:** POST /captains/login
+
+**Description:**  
+Logs in a captain using email and password. On success, returns a JWT token and the captain's details.
+
+**Request:**
+
+- Content-Type: application/json
+- Body:
+
+```json
+{
+  "email": "string (valid email)",
+  "password": "string (min: 8 characters)"
+}
+```
+
+**Success Response:**
+
+- Status Code: 200 OK
+- Body:
+
+```json
+{
+  "token": "string (JWT token)",
+  "captain": {
+    "_id": "string",
+    "fullname": {
+      "firstname": "string",
+      "lastname": "string"
+    },
+    "email": "string",
+    "vehicle": {
+      "color": "string",
+      "plate": "string",
+      "capacity": "number",
+      "vehicleType": "string"
+    }
+    // ...other captain details...
+  }
+}
+```
+
+**Example Success Response:**
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.abcd1234",
+  "captain": {
+    "_id": "605c3c2b9e7b9b0015b4c123",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com",
+    "vehicle": {
+      "color": "Red",
+      "plate": "ABC123",
+      "capacity": 4,
+      "vehicleType": "car"
+    }
+  }
+}
+```
+
+**Error Response:**
+
+- Status Code: 401 Unauthorized
+- Body:
+
+```json
+{
+  "message": "Invalid email or password"
+}
+```
+
+**Example Error Response:**
+
+```json
+{
+  "message": "Invalid email or password"
+}
+```
+
+### Captains Profile Endpoint
+
+**Endpoint:** GET /captains/profile
+
+**Description:**  
+Retrieves the profile details of the authenticated captain.
+
+**Request:**
+
+- Headers: Must include a valid JWT token (in cookies or Authorization header).
+
+**Success Response:**
+
+- Status Code: 200 OK
+- Body:
+
+```json
+{
+  "captain": {
+    "_id": "string",
+    "fullname": {
+      "firstname": "string",
+      "lastname": "string"
+    },
+    "email": "string",
+    "vehicle": {
+      "color": "string",
+      "plate": "string",
+      "capacity": "number",
+      "vehicleType": "string"
+    }
+    // ...other captain details...
+  }
+}
+```
+
+**Example Success Response:**
+
+```json
+{
+  "captain": {
+    "_id": "605c3c2b9e7b9b0015b4c123",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com",
+    "vehicle": {
+      "color": "Red",
+      "plate": "ABC123",
+      "capacity": 4,
+      "vehicleType": "car"
+    }
+  }
+}
+```
+
+**Error Response:**
+
+- Status Code: 401 Unauthorized
+- Body:
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+**Example Error Response:**
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+### Captains Logout Endpoint
+
+**Endpoint:** GET /captains/logout
+
+**Description:**  
+Logs out the authenticated captain by clearing the authentication token cookie and blacklisting the token.
+
+**Request:**
+
+- Headers: Must include a valid JWT token (in cookies or Authorization header).
+
+**Success Response:**
+
+- Status Code: 200 OK
+- Body:
+
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+**Example Success Response:**
+
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+**Error Response:**
+
+- Status Code: 401 Unauthorized
+- Body:
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+**Example Error Response:**
+
+```json
+{
+  "message": "Unauthorized"
 }
 ```
