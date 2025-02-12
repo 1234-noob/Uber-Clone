@@ -61,7 +61,7 @@ const CaptainSchema = new mongoose.Schema({
     },
     vehicleType: {
       type: String,
-      enum: ["car", "motorcycle", "auto"],
+      enum: ["car", "bike", "auto"],
       required: true,
     },
   },

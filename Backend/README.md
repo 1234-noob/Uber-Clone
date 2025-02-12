@@ -307,7 +307,7 @@ Registers a new captain. Validates the captain's details including personal and 
   "email": "string (valid email)",
   "password": "string (min: 8 characters)",
   "vehicle": {
-    " color": "string",
+    "color": "string",
     "plate": "string",
     "capacity": "number",
     "vehicleType": "string"
@@ -331,9 +331,10 @@ Registers a new captain. Validates the captain's details including personal and 
     },
     "email": "string",
     "vehicle": {
-      "make": "string",
-      "model": "string",
-      "year": "number"
+      "color": "string",
+      "plate": "string",
+      "capacity": "number",
+      "vehicleType": "string"
     }
     // ...other captain details...
   }
@@ -344,7 +345,7 @@ Registers a new captain. Validates the captain's details including personal and 
 
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.abcd1234",
   "captain": {
     "_id": "605c3c2b9e7b9b0015b4c123",
     "fullname": {
@@ -353,11 +354,11 @@ Registers a new captain. Validates the captain's details including personal and 
     },
     "email": "john.doe@example.com",
     "vehicle": {
-      "make": "Toyota",
-      "model": "Camry",
-      "year": 2020
+      "color": "Red",
+      "plate": "ABC123",
+      "capacity": 4,
+      "vehicleType": "car"
     }
-    // ...other captain details...
   }
 }
 ```
@@ -386,8 +387,8 @@ Registers a new captain. Validates the captain's details including personal and 
 {
   "error": [
     {
-      "msg": "Invalid email format",
-      "param": "email",
+      "msg": "For a capacity of 3 or more, vehicle type must be car",
+      "param": "vehicle.vehicleType",
       "location": "body"
     }
   ]
