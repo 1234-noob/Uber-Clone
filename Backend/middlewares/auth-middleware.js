@@ -7,14 +7,15 @@ const jwt = require("jsonwebtoken");
 
 const authUser = async (req, res, next) => {
   const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
-
+  console.log("Middleware", token);
   if (!token) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(401).json({ message: "Unauthorized Access" });
   }
 
   const isBlackListed = await BlacklistToken.findOne({
     token: token,
   });
+
   if (isBlackListed) {
     return res.status(401).json({
       message: "Unauthorized Access",
