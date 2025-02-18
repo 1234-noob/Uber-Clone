@@ -10,7 +10,7 @@ const UserSignup = () => {
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
-  const { userData, setUserData } = useContext(UserDataContext);
+  const { setUserData } = useContext(UserDataContext);
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
@@ -36,6 +36,7 @@ const UserSignup = () => {
 
       navigate("/home");
     }
+
     setFirstName("");
     setLastName("");
     setEmail("");

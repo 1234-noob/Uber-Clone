@@ -19,6 +19,7 @@ const CaptainLogin = () => {
       `${import.meta.env.VITE_BASE_URL}/captains/login`,
       captainLoginData
     );
+
     if (response.status === 200) {
       const data = response.data;
       localStorage.setItem("token", data.token);
