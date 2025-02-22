@@ -1,9 +1,22 @@
 import React from "react";
 
-const LookingForDriver = () => {
+const LookingForDriver = ({
+  vehicleFoundPanelOpen,
+  setVehicleFoundPanelOpen,
+}) => {
   return (
     <div className="relative w-full">
+      <div
+        className="absolute top-0 right-6 text-2xl "
+        onClick={() => setVehicleFoundPanelOpen(!vehicleFoundPanelOpen)}
+      >
+        <i
+          className={`ri-arrow-down-wide-line text-gray-300
+            `}
+        ></i>
+      </div>
       <h3 className="text-2xl font-semibold mb-5">Looking for a Driver</h3>
+
       <div className="flex flex-col gap-5 justify-between items-center">
         <img
           className="h-24"

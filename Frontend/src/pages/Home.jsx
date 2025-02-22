@@ -35,6 +35,8 @@ const Home = () => {
       setPanelOpen(false);
     } else if (vehicleFoundPanelOpen === true) {
       setConfirmedRidePanelOpen(false);
+    } else if (vehicleFoundPanelOpen === false) {
+      setConfirmedRidePanelOpen(false);
     }
   }, [panelOpen, confirmedRidePanelOpen, vehicleFoundPanelOpen]);
 
@@ -157,7 +159,10 @@ const Home = () => {
         ref={vehicleFoundRef}
         className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-6 pt-12"
       >
-        <LookingForDriver />
+        <LookingForDriver
+          vehicleFoundPanelOpen={vehicleFoundPanelOpen}
+          setVehicleFoundPanelOpen={setVehicleFoundPanelOpen}
+        />
       </div>
       <div
         ref={waitingForDriverRef}
