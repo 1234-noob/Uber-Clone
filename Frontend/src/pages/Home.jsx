@@ -77,7 +77,30 @@ const Home = () => {
   };
 
   const getFare = () => {
-    setVehiclePanelOpen(true);
+     if (!pickup || !drop) {
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/rides/getfare`,
+        {
+          params: {
+            pickup,
+            drop,
+          },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      setFare(response.data.fare);
+      setVehiclePanelOpen(true);
+    } catch (error) {
+      setFare({});
+    }
+    
   };
 
   useEffect(() => {
