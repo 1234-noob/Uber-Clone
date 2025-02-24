@@ -72,4 +72,4 @@ const createRide = async ({ user, pickup, destination, vehicleType }) => {
   return ride;
 };
 
-module.exports = { createRide };
+module.exports = { createRide, getFare };

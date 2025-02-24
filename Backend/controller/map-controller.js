@@ -66,7 +66,7 @@ const getAutoCompleteSuggestion = async (req, res) => {
     });
   } catch (error) {
     res.status(404).json({
-      message: "Input doesnt match ",
+      message: "Input doesn't match ",
     });
   }
 };

@@ -59,7 +59,7 @@ const getAutoComplete = async (input) => {
     const apiKey = process.env.GOOGLE_MAPS_API_KEY;
     const url = `https://maps.gomaps.pro/maps/api/place/autocomplete/json?input=${input}&key=${apiKey}`;
     const response = await axios.get(url);
-    console.log(response.data.predictions);
+
     if (response.status === 200) {
       const predictions = response.data.predictions;
 
