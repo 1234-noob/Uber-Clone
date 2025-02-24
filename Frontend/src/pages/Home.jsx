@@ -75,6 +75,21 @@ const Home = () => {
     setPickup("");
     setDrop("");
   };
+   const createRide = async () => {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/rides/create`,
+      {
+        pickup,
+        destination: drop,
+        vehicleType,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+  };
 
   const getFare = () => {
      if (!pickup || !drop) {
