@@ -1,20 +1,24 @@
-const LocationSearchPanel = ({ vehiclePanelOpen, setVehiclePanelOpen }) => {
-  const locations = [
-    "24B, Near Kapoor's Cafe , Gaming Cafe Mumbai",
-    "Grant Road, Mumbai",
-    "Mumbai Central, Mumbai",
-    "Indira Gandhi International Airport, Delhi",
-    "Chhatrapati Shivaji Maharaj Terminus, Mumbai",
-    "Garden City, Mumbai",
-  ];
+const LocationSearchPanel = ({
+  suggestions,
+  setPickup,
+  setDrop,
+  activeField,
+}) => {
+  const handleSuggestionClick = (suggestion) => {
+    if (activeField === "pickup") {
+      setPickup(suggestion.description);
+    } else if (activeField === "destination") {
+      setDrop(suggestion.description);
+    }
+  };
   return (
     <div className="py-2">
-      {locations.map((location, idx) => {
+      {suggestions.map((suggestion, idx) => {
         return (
           <div
             key={idx}
             onClick={() => {
-              setVehiclePanelOpen(!vehiclePanelOpen);
+              handleSuggestionClick(suggestion);
             }}
             className="flex active:border-black border-2 border-gray-50 p-3 rounded-2xl gap-4 items-center justify-start my-4"
           >
@@ -22,7 +26,7 @@ const LocationSearchPanel = ({ vehiclePanelOpen, setVehiclePanelOpen }) => {
               <i className="ri-map-pin-fill  rounded-full w-10 h-10 flex justify-center items-center bg-[#eeeeee]"></i>
             </div>
 
-            <h4 className="font-medium">{location}</h4>
+            <h4 className="font-medium">{suggestion.description}</h4>
           </div>
         );
       })}

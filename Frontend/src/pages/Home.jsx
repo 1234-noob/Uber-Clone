@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
+import axios from "axios";
 import gsap from "gsap";
 import "remixicon/fonts/remixicon.css";
 import LocationSearchPanel from "../components/LocationSearchPanel";
@@ -21,12 +22,64 @@ const Home = () => {
   const confirmedRideRef = useRef(null);
   const panelRef = useRef(null);
   const waitingForDriverRef = useRef(null);
+  const [pickupSuggestions, setPickupSuggestions] = useState([]);
+  const [destinationSuggestions, setDestinationSuggestions] = useState([]);
+  const [activeField, setActiveField] = useState(null);
+
+  const handlePickupChange = async (e) => {
+    setPickup(e.target.value);
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/maps/getsuggestions`,
+        {
+          params: { input: e.target.value },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      setPickupSuggestions(response.data.autoCompleteSuggestion.predictions);
+      if (!pickup) {
+        setPickupSuggestions([]);
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
+  };
+  const handleDestinationChange = async (e) => {
+    setDrop(e.target.value);
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/maps/getsuggestions`,
+        {
+          params: { input: e.target.value },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      setDestinationSuggestions(
+        response.data.autoCompleteSuggestion.predictions
+      );
+      if (!drop) {
+        setDestinationSuggestions([]);
+      }
+    } catch {
+      throw new Error(error);
+    }
+  };
+
   const onSubmitHandler = (e) => {
     e.preventDefault();
 
     setPickup("");
     setDrop("");
   };
+
+  const getFare = () => {
+    setVehiclePanelOpen(true);
+  };
+
   useEffect(() => {
     if (panelOpen === false) {
       setVehiclePanelOpen(false);
@@ -113,27 +166,47 @@ const Home = () => {
           <form onSubmit={(e) => onSubmitHandler(e)}>
             <div className="absolute h-16 w-1 bg-gray-700 top-[45%] left-10 rounded-full "></div>
             <input
-              onClick={() => setPanelOpen(true)}
+              onClick={() => {
+                setPanelOpen(true);
+                setActiveField("pickup");
+              }}
               value={pickup}
-              onChange={(e) => setPickup(e.target.value)}
+              onChange={(e) => handlePickupChange(e)}
               className="bg-[#eeeeee] px-12 py-2 text-base outline-none rounded-lg w-full mt-5 placeholder:text-sm placeholder:text-black"
               type="text"
               placeholder="Add a pick-up location"
             />
             <input
-              onClick={() => setPanelOpen(true)}
+              onClick={() => {
+                setActiveField("destination");
+                setPanelOpen(true);
+              }}
               value={drop}
-              onChange={(e) => setDrop(e.target.value)}
+              onChange={(e) => handleDestinationChange(e)}
               className="bg-[#eeeeee] px-12 py-2 text-base outline-none rounded-lg w-full mt-3 placeholder:text-sm placeholder:text-black"
               type="text"
               placeholder="Enter your destination"
             />
           </form>
+          <button
+            onClick={() => {
+              getFare();
+            }}
+            className="bg-black text-white px-4 py-2 rounded-lg mt-3 w-full"
+          >
+            Find Trip
+          </button>
         </div>
         <div ref={panelRef} className={`h-[0%] bg-white `}>
           <LocationSearchPanel
-            vehiclePanelOpen={vehiclePanelOpen}
-            setVehiclePanelOpen={setVehiclePanelOpen}
+            suggestions={
+              activeField === "pickup"
+                ? pickupSuggestions
+                : destinationSuggestions
+            }
+            setPickup={setPickup}
+            setDrop={setDrop}
+            activeField={activeField}
           />
         </div>
       </div>
@@ -142,6 +215,7 @@ const Home = () => {
         className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12"
       >
         <VehiclePanel
+          setVehiclePanelOpen={setVehiclePanelOpen}
           confirmedRidePanelOpen={confirmedRidePanelOpen}
           setConfirmedRidePanelOpen={setConfirmedRidePanelOpen}
         />

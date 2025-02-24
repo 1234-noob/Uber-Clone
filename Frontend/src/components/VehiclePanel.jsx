@@ -1,6 +1,7 @@
 const VehiclePanel = ({
   confirmedRidePanelOpen,
   setConfirmedRidePanelOpen,
+  setVehiclePanelOpen,
 }) => {
   const vehicleDetails = [
     {
@@ -30,6 +31,15 @@ const VehiclePanel = ({
   ];
   return (
     <div>
+      <div
+        className="absolute top-12 right-6 text-2xl "
+        onClick={() => setVehiclePanelOpen(false)}
+      >
+        <i
+          className={`ri-arrow-down-wide-line text-gray-300
+        `}
+        ></i>
+      </div>
       <h3 className="text-2xl font-semibold mb-5">Choose a vehicle</h3>
       {vehicleDetails.map((vehicle, index) => {
         return (
