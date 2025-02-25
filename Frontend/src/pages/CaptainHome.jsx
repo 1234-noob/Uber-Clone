@@ -1,17 +1,49 @@
 import { Link } from "react-router-dom";
 import CaptainDetails from "../components/CaptainDetails";
 import RidePopUp from "../components/RidePopUp";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect, useContext, use } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import ConfirmRidePopUp from "../components/ConfirmRidePopUp";
+import { SocketDataContext } from "../context/SocketContext";
+import { CaptainDataContext } from "../context/CaptainContext";
 
 const CaptainHome = () => {
   const [confirmridePopUpPanel, setConfirmRidePopUpPanel] = useState(false);
-  const [ridePopUpPanel, setRidePopPanel] = useState(true);
+  const [ridePopUpPanel, setRidePopPanel] = useState(false);
   const ridePopUpPanelRef = useRef(null);
   const confirmRidePopUpPanelRef = useRef(null);
+  const { sendMessage, reciveMessage, socket } = useContext(SocketDataContext);
+  const { captainData } = useContext(CaptainDataContext);
 
+  useEffect(() => {
+    sendMessage("join", {
+      userType: "captain",
+      userId: captainData._id,
+    });
+
+    const updateLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          const location = {
+            ltd: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          sendMessage("update-location-captain", {
+            userId: captainData._id,
+            location,
+          });
+        });
+      }
+    };
+    const locationInterval = setInterval(updateLocation, 10000);
+    updateLocation();
+  }, []);
+
+  socket.on("newride", (data) => {
+    setRide(data);
+    setRidePopPanel(true);
+  });
   useGSAP(() => {
     gsap.to(ridePopUpPanelRef.current, {
       transform: ridePopUpPanel ? "translateY(0)" : "translateY(100%)",
@@ -34,7 +66,7 @@ const CaptainHome = () => {
           to={"/captain-logout"}
           className=" h-10 w-10 bg-white flex items-center justify-center rounded-full"
         >
-          <i class="font-medium text-lg ri-logout-box-r-line"></i>
+          <i className="font-medium text-lg ri-logout-box-r-line"></i>
         </Link>
       </div>
 

@@ -1,5 +1,6 @@
 require("dotenv").config();
 const axios = require("axios");
+const captain = require("../models/captain");
 
 const getAddressCoordinate = async (address) => {
   if (!address) {
@@ -17,7 +18,7 @@ const getAddressCoordinate = async (address) => {
       const location = response.data.results[0].geometry.location;
 
       return {
-        lat: location.lat,
+        ltd: location.lat,
         lng: location.lng,
       };
     }
@@ -70,4 +71,20 @@ const getAutoComplete = async (input) => {
   }
 };
 
-module.exports = { getAddressCoordinate, getDistanceTime, getAutoComplete };
+const getCaptainsInTheRadius = async (ltd, lng, radius) => {
+  const captains = await captain.find({
+    location: {
+      $geoWithin: {
+        $centerSphere: [[ltd, lng], radius / 6378],
+      },
+    },
+  });
+  return captains;
+};
+
+module.exports = {
+  getAddressCoordinate,
+  getDistanceTime,
+  getAutoComplete,
+  getCaptainsInTheRadius,
+};

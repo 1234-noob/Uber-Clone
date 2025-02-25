@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useContext } from "react";
 import { useGSAP } from "@gsap/react";
 import axios from "axios";
 import gsap from "gsap";
@@ -8,7 +8,8 @@ import VehiclePanel from "../components/VehiclePanel";
 import ConfirmedRide from "../components/ConfirmedRide";
 import LookingForDriver from "../components/LookingForDriver";
 import WaitingForDriver from "../components/WaitingForDriver";
-
+import { SocketDataContext } from "../context/SocketContext";
+import { UserDataContext } from "../context/UserContext";
 const Home = () => {
   const [pickup, setPickup] = useState("");
   const [drop, setDrop] = useState("");
@@ -25,6 +26,14 @@ const Home = () => {
   const [pickupSuggestions, setPickupSuggestions] = useState([]);
   const [destinationSuggestions, setDestinationSuggestions] = useState([]);
   const [activeField, setActiveField] = useState(null);
+  const [fare, setFare] = useState({});
+  const [vehicleType, setVehicleType] = useState(null);
+  const { userData } = useContext(UserDataContext);
+  const { sendMessage, reciveMessage } = useContext(SocketDataContext);
+
+  useEffect(() => {
+    sendMessage("join", { userType: "user", userId: userData._id });
+  }, [userData]);
 
   const handlePickupChange = async (e) => {
     setPickup(e.target.value);
@@ -64,7 +73,7 @@ const Home = () => {
       if (!drop) {
         setDestinationSuggestions([]);
       }
-    } catch {
+    } catch (error) {
       throw new Error(error);
     }
   };
@@ -75,7 +84,7 @@ const Home = () => {
     setPickup("");
     setDrop("");
   };
-   const createRide = async () => {
+  const createRide = async () => {
     const response = await axios.post(
       `${import.meta.env.VITE_BASE_URL}/rides/create`,
       {
@@ -89,10 +98,11 @@ const Home = () => {
         },
       }
     );
+    console.log(response.data);
   };
 
-  const getFare = () => {
-     if (!pickup || !drop) {
+  const getFare = async () => {
+    if (!pickup || !drop) {
       return;
     }
 
@@ -115,21 +125,7 @@ const Home = () => {
     } catch (error) {
       setFare({});
     }
-    
   };
-
-  useEffect(() => {
-    if (panelOpen === false) {
-      setVehiclePanelOpen(false);
-    } else if (confirmedRidePanelOpen === true) {
-      setVehiclePanelOpen(false);
-      setPanelOpen(false);
-    } else if (vehicleFoundPanelOpen === true) {
-      setConfirmedRidePanelOpen(false);
-    } else if (vehicleFoundPanelOpen === false) {
-      setConfirmedRidePanelOpen(false);
-    }
-  }, [panelOpen, confirmedRidePanelOpen, vehicleFoundPanelOpen]);
 
   useGSAP(() => {
     gsap.to(panelRef.current, {
@@ -141,7 +137,7 @@ const Home = () => {
       padding: panelOpen ? "24" : "0",
       display: panelOpen ? "block" : "none",
     });
-  }, [panelOpen, confirmedRidePanelOpen, vehiclePanelOpen]);
+  }, [panelOpen]);
 
   useGSAP(() => {
     gsap.to(vehiclePanelRef.current, {
@@ -150,12 +146,9 @@ const Home = () => {
   }, [vehiclePanelOpen]);
   useGSAP(() => {
     gsap.to(confirmedRideRef.current, {
-      transform:
-        confirmedRidePanelOpen && !vehicleFoundPanelOpen
-          ? "translateY(0)"
-          : "translateY(100%)",
+      transform: confirmedRidePanelOpen ? "translateY(0)" : "translateY(100%)",
     });
-  }, [confirmedRidePanelOpen, vehicleFoundPanelOpen]);
+  }, [confirmedRidePanelOpen]);
   useGSAP(() => {
     gsap.to(vehicleFoundRef.current, {
       transform: vehicleFoundPanelOpen ? "translateY(0)" : "translateY(100%)",
@@ -169,7 +162,7 @@ const Home = () => {
   }, [waitingForDriver]);
 
   return (
-    <div className="h-screen relative">
+    <div className="h-screen relative overflow-hidden">
       <img
         src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
         alt=""
@@ -183,7 +176,7 @@ const Home = () => {
         />
       </div>
       <div className="flex flex-col justify-end h-screen w-full absolute top-0 ">
-        <div className="h-[30%] p-6 bg-white relative ">
+        <div className="h-[30%] p-6  bg-white relative ">
           <h5
             onClick={() => setPanelOpen(!panelOpen)}
             className="absolute top-6 right-6 text-2xl"
@@ -253,26 +246,39 @@ const Home = () => {
         className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12"
       >
         <VehiclePanel
+          fare={fare}
+          setVehicleType={setVehicleType}
           setVehiclePanelOpen={setVehiclePanelOpen}
-          confirmedRidePanelOpen={confirmedRidePanelOpen}
           setConfirmedRidePanelOpen={setConfirmedRidePanelOpen}
         />
       </div>
       <div
         ref={confirmedRideRef}
-        className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-6 pt-12"
+        className={`fixed w-full z-10 ${
+          confirmedRidePanelOpen ? "bottom-0" : "bottom-[-150px]"
+        } translate-y-full bg-white px-5 py-6 `}
       >
         <ConfirmedRide
+          createRide={createRide}
+          fare={fare[vehicleType]}
+          vehicleType={vehicleType}
+          pickup={pickup}
+          drop={drop}
           setConfirmedRidePanelOpen={setConfirmedRidePanelOpen}
           setVehicleFoundPanelOpen={setVehicleFoundPanelOpen}
         />
       </div>
       <div
         ref={vehicleFoundRef}
-        className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-6 pt-12"
+        className={`fixed w-full z-10 ${
+          vehicleFoundPanelOpen ? "bottom-0" : "bottom-[-200px]"
+        }  bg-white px-5 py-6 `}
       >
         <LookingForDriver
-          vehicleFoundPanelOpen={vehicleFoundPanelOpen}
+          fare={fare[vehicleType]}
+          vehicleType={vehicleType}
+          pickup={pickup}
+          drop={drop}
           setVehicleFoundPanelOpen={setVehicleFoundPanelOpen}
         />
       </div>
@@ -280,7 +286,11 @@ const Home = () => {
         ref={waitingForDriverRef}
         className="fixed w-full z-10 bottom-0 translate-y-full  bg-white px-3 py-6 pt-12"
       >
-        <WaitingForDriver setWaitingForDriver={setWaitingForDriver} />
+        <WaitingForDriver
+          setVehicleFoundPanelOpen={setVehicleFoundPanelOpen}
+          waitingForDriver={waitingForDriver}
+          setWaitingForDriver={setWaitingForDriver}
+        />
       </div>
     </div>
   );

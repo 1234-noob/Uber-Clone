@@ -1,6 +1,10 @@
 const { createRide, getFare } = require("../services/ride-service");
 const { validationResult } = require("express-validator");
-
+const { sendMessageToSocketId } = require("../socket");
+const {
+  getAddressCoordinate,
+  getCaptainsInTheRadius,
+} = require("../services/maps-service");
 const createARide = async (req, res) => {
   const error = validationResult(req);
   if (!error) {
@@ -17,6 +21,22 @@ const createARide = async (req, res) => {
       destination: destination,
       vehicleType: vehicleType,
     });
+
+    const pickupCoordinates = await getAddressCoordinate(pickup);
+
+    const captainInRadius = await getCaptainsInTheRadius(
+      pickupCoordinates.ltd,
+      pickupCoordinates.lng,
+      2
+    );
+    ride.otp = "";
+
+    captainInRadius.map((captain) => {
+      sendMessageToSocketId(captain.socketId, {
+        data: ride,
+      });
+    });
+
     return res.status(201).json({
       ride,
     });
@@ -38,6 +58,7 @@ const getRideFare = async (req, res) => {
 
   try {
     const fare = await getFare(pickup, drop);
+
     return res.status(200).json({
       fare,
     });

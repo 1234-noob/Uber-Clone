@@ -71,6 +71,7 @@ const ConfirmRidePopUp = ({
               value={otp}
               onChange={setOtp}
               numInputs={4}
+              inputType="number"
               inputStyle={
                 "text-2xl font-semibold text-gray-600 outline-none border-1 border-gray-300 mx-2"
               }

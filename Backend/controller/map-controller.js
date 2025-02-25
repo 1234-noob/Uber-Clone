@@ -35,9 +35,11 @@ const getDistanceAndTime = async (req, res) => {
         errors: errors.array(),
       });
     }
+
     const { origin, destination } = req.query;
     const distanceTime = await getDistanceTime(origin, destination);
     const { distance, duration } = distanceTime;
+
     res.status(200).json({
       distance: distance,
       duration: duration,

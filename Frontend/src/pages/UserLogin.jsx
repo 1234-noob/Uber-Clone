@@ -6,7 +6,7 @@ const UserLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { userData, setUserData } = useContext(UserDataContext);
+  const { setUserData } = useContext(UserDataContext);
   const navigate = useNavigate();
 
   const onSubmitHandler = async (e) => {
