@@ -44,6 +44,17 @@ const getFare = async (pickup, destination) => {
   return vehicleFare;
 };
 
+const getDistance = async (pickup, destination) => {
+  if (!pickup || !destination) {
+    throw new Error("Pickup and Destination are required");
+  }
+
+  const distanceTime = await getDistanceTime(pickup, destination);
+  const distance = Math.round((distanceTime.distance / 1000) * 100) / 100;
+
+  return distance;
+};
+
 const getOtp = (num) => {
   const otp = otpGenerator.generate(num, {
     digits: true,
@@ -60,16 +71,34 @@ const createRide = async ({ user, pickup, destination, vehicleType }) => {
     throw new Error("All fields are required");
   }
   const fare = await getFare(pickup, destination);
-
+  const distance = await getDistance(pickup, destination);
   const ride = rideModel.create({
     user,
     pickup,
     destination,
     otp: getOtp(4),
+    distance,
+
     fare: fare[vehicleType],
   });
 
   return ride;
 };
 
-module.exports = { createRide, getFare };
+const confirmRides = async (rideId) => {
+  if (!rideId) {
+    throw new Error("Ride id is required");
+  }
+
+  await rideModel.findOneAndUpdate(
+    { _id: rideId },
+    { status: "confirmed", captain: captainId }
+  );
+  const ride = await rideModel.findOne({ _id: rideId }).populate("user");
+  if (!ride) {
+    throw new Error("Ride not found");
+  }
+  return ride;
+};
+
+module.exports = { createRide, getFare, confirmRides };

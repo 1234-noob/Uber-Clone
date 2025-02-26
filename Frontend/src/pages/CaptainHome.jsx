@@ -7,6 +7,7 @@ import { useGSAP } from "@gsap/react";
 import ConfirmRidePopUp from "../components/ConfirmRidePopUp";
 import { SocketDataContext } from "../context/SocketContext";
 import { CaptainDataContext } from "../context/CaptainContext";
+import axios from "axios";
 
 const CaptainHome = () => {
   const [confirmridePopUpPanel, setConfirmRidePopUpPanel] = useState(false);
@@ -15,7 +16,7 @@ const CaptainHome = () => {
   const confirmRidePopUpPanelRef = useRef(null);
   const { sendMessage, reciveMessage, socket } = useContext(SocketDataContext);
   const { captainData } = useContext(CaptainDataContext);
-
+  const [ride, setRide] = useState(null);
   useEffect(() => {
     sendMessage("join", {
       userType: "captain",
@@ -41,6 +42,7 @@ const CaptainHome = () => {
   }, []);
 
   socket.on("newride", (data) => {
+    console.log(data);
     setRide(data);
     setRidePopPanel(true);
   });
@@ -54,6 +56,20 @@ const CaptainHome = () => {
       transform: confirmridePopUpPanel ? "translateY(0)" : "translateY(100%)",
     });
   }, [confirmridePopUpPanel]);
+
+  const confirmRide = async () => {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/rides/confirm`,
+
+      {
+        rideId: ride._id,
+        captainId: captainData._id,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+  };
   return (
     <div className="h-screen">
       <div className="fixed p-6 top-0 flex justify-between items-center w-full">
@@ -85,7 +101,9 @@ const CaptainHome = () => {
         className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12"
       >
         <RidePopUp
+          ride={ride}
           setRidePopPanel={setRidePopPanel}
+          confirmRide={confirmRide}
           setConfirmRidePopUpPanel={setConfirmRidePopUpPanel}
         />
       </div>

@@ -51,7 +51,7 @@ const sendMessageToSocketId = (socketId, message) => {
     `Sending message to ${socketId} & event ${message.event} ${message.data}`
   );
   if (io) {
-    io.to(socketId).emit("newride", message.data);
+    io.to(socketId).emit(message.event, message.data);
   } else {
     console.log("Socket.io not initialized");
   }

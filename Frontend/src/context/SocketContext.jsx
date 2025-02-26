@@ -8,9 +8,6 @@ const SocketContext = ({ children }) => {
     socket.on("connect", () => {
       console.log("Connected to server");
     });
-    socket.on("connect", () => {
-      console.log("Connected to server");
-    });
   }, []);
 
   const sendMessage = (eventName, message) => {

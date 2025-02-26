@@ -29,7 +29,7 @@ const Home = () => {
   const [fare, setFare] = useState({});
   const [vehicleType, setVehicleType] = useState(null);
   const { userData } = useContext(UserDataContext);
-  const { sendMessage, reciveMessage } = useContext(SocketDataContext);
+  const { sendMessage, reciveMessage, socket } = useContext(SocketDataContext);
 
   useEffect(() => {
     sendMessage("join", { userType: "user", userId: userData._id });
@@ -126,6 +126,10 @@ const Home = () => {
       setFare({});
     }
   };
+
+  socket.on("ride-confirm", (data) => {
+    setWaitingForDriver(true);
+  });
 
   useGSAP(() => {
     gsap.to(panelRef.current, {
