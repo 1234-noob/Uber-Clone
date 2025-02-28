@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, useContext } from "react";
 import { useGSAP } from "@gsap/react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import gsap from "gsap";
 import "remixicon/fonts/remixicon.css";
@@ -10,7 +11,10 @@ import LookingForDriver from "../components/LookingForDriver";
 import WaitingForDriver from "../components/WaitingForDriver";
 import { SocketDataContext } from "../context/SocketContext";
 import { UserDataContext } from "../context/UserContext";
+import LiveTracking from "../components/LiveTracking";
+
 const Home = () => {
+  const navigate = useNavigate();
   const [pickup, setPickup] = useState("");
   const [drop, setDrop] = useState("");
   const [panelOpen, setPanelOpen] = useState(false);
@@ -18,19 +22,19 @@ const Home = () => {
   const [confirmedRidePanelOpen, setConfirmedRidePanelOpen] = useState(false);
   const [vehicleFoundPanelOpen, setVehicleFoundPanelOpen] = useState(false);
   const [waitingForDriver, setWaitingForDriver] = useState(false);
-  const vehiclePanelRef = useRef(null);
-  const vehicleFoundRef = useRef(null);
-  const confirmedRideRef = useRef(null);
-  const panelRef = useRef(null);
-  const waitingForDriverRef = useRef(null);
   const [pickupSuggestions, setPickupSuggestions] = useState([]);
   const [destinationSuggestions, setDestinationSuggestions] = useState([]);
   const [activeField, setActiveField] = useState(null);
   const [fare, setFare] = useState({});
   const [vehicleType, setVehicleType] = useState(null);
+  const [ride, setRide] = useState({});
   const { userData } = useContext(UserDataContext);
   const { sendMessage, reciveMessage, socket } = useContext(SocketDataContext);
-
+  const vehiclePanelRef = useRef(null);
+  const vehicleFoundRef = useRef(null);
+  const confirmedRideRef = useRef(null);
+  const panelRef = useRef(null);
+  const waitingForDriverRef = useRef(null);
   useEffect(() => {
     sendMessage("join", { userType: "user", userId: userData._id });
   }, [userData]);
@@ -55,6 +59,12 @@ const Home = () => {
       throw new Error(error);
     }
   };
+
+  socket.on("ride-started", (data) => {
+    setWaitingForDriver(false);
+    navigate("/riding", { state: { ride: data } });
+  });
+
   const handleDestinationChange = async (e) => {
     setDrop(e.target.value);
     try {
@@ -98,7 +108,6 @@ const Home = () => {
         },
       }
     );
-    console.log(response.data);
   };
 
   const getFare = async () => {
@@ -127,7 +136,9 @@ const Home = () => {
     }
   };
 
-  socket.on("ride-confirm", (data) => {
+  socket.on("ride-confirmed", (data) => {
+    setRide(data);
+    setVehicleFoundPanelOpen(false);
     setWaitingForDriver(true);
   });
 
@@ -173,11 +184,7 @@ const Home = () => {
         className="w-16 absolute mt-9 ml-9 cursor-pointer"
       />
       <div className="h-screen w-full">
-        <img
-          className="h-full w-full object-cover"
-          src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
-          alt=""
-        />
+        <LiveTracking />
       </div>
       <div className="flex flex-col justify-end h-screen w-full absolute top-0 ">
         <div className="h-[30%] p-6  bg-white relative ">
@@ -291,6 +298,7 @@ const Home = () => {
         className="fixed w-full z-10 bottom-0 translate-y-full  bg-white px-3 py-6 pt-12"
       >
         <WaitingForDriver
+          ride={ride}
           setVehicleFoundPanelOpen={setVehicleFoundPanelOpen}
           waitingForDriver={waitingForDriver}
           setWaitingForDriver={setWaitingForDriver}

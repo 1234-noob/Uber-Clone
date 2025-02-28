@@ -5,6 +5,8 @@ const {
   createARide,
   getRideFare,
   confirmRide,
+  startRide,
+  endRide,
 } = require("../controller/ride-controller");
 const router = express.Router();
 
@@ -46,9 +48,32 @@ router.get(
 
 router.post(
   "/confirm",
-  body("rideId").isMongoId().withMessage("Invalid ride id"),
+  [
+    body("rideId").isMongoId().withMessage("Invalid ride id"),
+    body("captainId").isMongoId().withMessage("Invalid captain id"),
+  ],
   authCaptain,
   confirmRide
+);
+
+router.get(
+  "/start-ride",
+  [
+    query("rideId").isMongoId().withMessage("Invalid ride id"),
+    query("otp")
+      .isInt()
+      .isLength({ min: 4, max: 4 })
+      .withMessage("Invalid OTP"),
+  ],
+  authCaptain,
+  startRide
+);
+
+router.post(
+  "/end-ride",
+  [body("rideId").isMongoId().withMessage("Invalid ride id")],
+  authCaptain,
+  endRide
 );
 
 module.exports = router;

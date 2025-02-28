@@ -22,7 +22,7 @@ const LookingForDriver = ({
             `}
         ></i>
       </div>
-      <h3 className="text-2xl font-semibold mb-5">Loonking for Driver</h3>
+      <h3 className="text-2xl font-semibold mb-5">Looking for Driver</h3>
       <div className="flex flex-col gap-5 justify-between items-center">
         {vehicleType === "car" ? (
           <img

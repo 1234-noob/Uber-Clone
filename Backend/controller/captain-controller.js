@@ -24,6 +24,7 @@ const registerCaptain = async (req, res) => {
       password: hashPassword,
       color: vehicle.color,
       plate: vehicle.plate,
+      modul: vehicle.model,
       capacity: vehicle.capacity,
       vehicleType: vehicle.vehicleType,
     });

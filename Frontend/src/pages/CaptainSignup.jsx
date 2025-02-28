@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CaptainDataContext } from "../context/CaptainContext";
 import axios from "axios";
+
 const CaptainSignup = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -11,6 +12,7 @@ const CaptainSignup = () => {
   const [plate, setPlate] = useState("");
   const [capacity, setCapacity] = useState("");
   const [vehicleType, setVehicleType] = useState("");
+  const [vehicleModel, setVehicleModel] = useState("");
   const { captainData, setCaptainData } = useContext(CaptainDataContext);
   const navigate = useNavigate();
   const onSubmitHandler = async (e) => {
@@ -23,6 +25,7 @@ const CaptainSignup = () => {
       email,
       password,
       vehicle: {
+        model: model,
         color: color,
         plate: plate,
         capacity: capacity,
@@ -49,6 +52,7 @@ const CaptainSignup = () => {
     setCapacity("");
     setColor("");
     setVehicleType("Select Vehicle type");
+    setVehicleModel("");
     setPlate("");
   };
 
@@ -128,7 +132,7 @@ const CaptainSignup = () => {
               value={vehicleType}
               onChange={(e) => setVehicleType(e.target.value)}
               required
-              className="bg-[#eeeeee] w-1/2 outline-none  border-gray-400  rounded px-4 py-2 border text-base "
+              className="bg-[#eeeeee] w-1/2  outline-none  border-gray-400  rounded px-4 py-2 border text-base "
             >
               <option className="bg-[#eeeeee]   border text-sm" value="">
                 Select Vehicle Type
@@ -150,6 +154,16 @@ const CaptainSignup = () => {
               type="number"
               required
               placeholder="Vehicle capacity"
+            />
+          </div>
+          <div>
+            <input
+              value={vehicleModel}
+              onChange={(e) => setVehicleModel(e.target.value)}
+              className="bg-[#eeeeee] w-1/2 outline-none  border-gray-400 rounded py-2 px-4 border  text-base placeholder:text-sm"
+              type="number"
+              required
+              placeholder="Vehicle Model"
             />
           </div>
 

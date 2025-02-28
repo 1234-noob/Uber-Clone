@@ -1,6 +1,8 @@
 const rideModel = require("../models/ride");
+const captainModel = require("../models/captain");
 const { getDistanceTime } = require("../services/maps-service");
 const otpGenerator = require("otp-generator");
+const captain = require("../models/captain");
 const getFare = async (pickup, destination) => {
   if (!pickup || !destination) {
     throw new Error("Pickup and Destination are required");
@@ -85,20 +87,97 @@ const createRide = async ({ user, pickup, destination, vehicleType }) => {
   return ride;
 };
 
-const confirmRides = async (rideId) => {
+const confirmRides = async (rideId, captainId) => {
   if (!rideId) {
     throw new Error("Ride id is required");
   }
+  const captain = await captainModel.findById(captainId);
 
   await rideModel.findOneAndUpdate(
     { _id: rideId },
-    { status: "confirmed", captain: captainId }
+    { status: "confirmed", captain: captain }
   );
-  const ride = await rideModel.findOne({ _id: rideId }).populate("user");
+  const ride = await rideModel
+    .findOne({ _id: rideId })
+    .populate("user")
+    .populate("captain")
+    .select("+otp");
   if (!ride) {
     throw new Error("Ride not found");
   }
   return ride;
 };
 
-module.exports = { createRide, getFare, confirmRides };
+const startRiding = async (rideId, otp) => {
+  if (!rideId || !otp) {
+    throw new Error("Ride id and OTP are required");
+  }
+
+  const ride = await rideModel
+    .findOne({
+      _id: rideId,
+    })
+    .populate("user")
+    .populate("captain")
+    .select("+otp");
+
+  if (!ride) {
+    throw new Error("Ride not found");
+  }
+
+  if (ride.status !== "confirmed") {
+    throw new Error("Ride not  accepted");
+  }
+
+  if (ride.otp != otp) {
+    throw new Error("Invalid OTP");
+  }
+
+  await rideModel.findOneAndUpdate(
+    {
+      _id: rideId,
+    },
+    {
+      status: "ongoing",
+    }
+  );
+
+  return ride;
+};
+
+const endRiding = async (rideId, captain) => {
+  if (!rideId) {
+    throw new Error("Ride id is required");
+  }
+  if (!captain) {
+    throw new Error("Captain is required");
+  }
+
+  const ride = await rideModel
+    .findOne({
+      _id: rideId,
+      captain: captain._id,
+    })
+    .populate("user")
+    .populate("captain")
+    .select("+otp");
+
+  if (!ride) {
+    throw new Error("Ride not found");
+  }
+
+  if (ride.status == "Ongoing") {
+    throw new Error("Ride not ongoing");
+  }
+  await rideModel.findOneAndUpdate(
+    {
+      _id: rideId,
+    },
+    {
+      status: "complete",
+    }
+  );
+  return ride;
+};
+
+module.exports = { createRide, getFare, confirmRides, startRiding, endRiding };

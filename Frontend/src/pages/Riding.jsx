@@ -1,7 +1,17 @@
-import React from "react";
-import { Link } from "react-router-dom";
-
+import React, { useEffect, useContext } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { SocketDataContext } from "../context/SocketContext";
+import LiveTracking from "../components/LiveTracking";
 const Riding = () => {
+  const { socket } = useContext(SocketDataContext);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const rideData = location.state?.ride;
+  useEffect(() => {
+    socket.on("ride-ended", (data) => {
+      navigate("/home");
+    });
+  }, []);
   return (
     <div className="h-screen">
       <Link
@@ -12,11 +22,7 @@ const Riding = () => {
       </Link>
 
       <div className="h-1/2">
-        <img
-          className="h-full w-full object-cover"
-          src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
-          alt=""
-        />
+        <LiveTracking />
       </div>
       <div className="h-1/2 px-4">
         <div className="flex py-2 items-center justify-between">
@@ -26,9 +32,18 @@ const Riding = () => {
             alt=""
           />
           <div className="text-right">
-            <h2 className="text-lg font-medium">Chinmay</h2>
-            <h4 className="text-xl font-semibold -mt-1 -mb-1">MH-04-AB-1234</h4>
-            <p className="text-sm text-gray-600">Maruti Suzuki WagnorR</p>
+            <h2 className="text-lg font-medium">
+              {rideData?.captain.fullname.firstname +
+                " " +
+                rideData?.captain.fullname.lastname}
+            </h2>
+            <h4 className="text-xl font-semibold -mt-1 -mb-1">
+              {rideData?.captain.vehicle.plate}
+            </h4>
+            <p className="text-sm text-gray-600">
+              {" "}
+              {rideData?.captain.vehicle.model}
+            </p>
           </div>
         </div>
         <div className="flex flex-col gap-3 justify-between items-center">
@@ -36,14 +51,22 @@ const Riding = () => {
             <div className="flex items-center gap-5 p-3 border-b-2 border-gray-100">
               <i className="text-lg ri-map-pin-2-fill"></i>
               <div>
-                <h3 className="text-lg font-medium">562/11-A</h3>
-                <p className="text-sm text-gray-600">Grant Road,Mumbai</p>
+                <h3 className="text-lg font-medium">
+                  {" "}
+                  {rideData?.destination.split(",")[0]}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {" "}
+                  {rideData?.destination}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-5 p-3 ">
               <i className="text-lg ri-currency-fill"></i>
               <div>
-                <h3 className="text-lg font-medium">&#8377; 193.50</h3>
+                <h3 className="text-lg font-medium">
+                  &#8377; {rideData?.fare}
+                </h3>
                 <p className="text-sm text-gray-600">Cash</p>
               </div>
             </div>

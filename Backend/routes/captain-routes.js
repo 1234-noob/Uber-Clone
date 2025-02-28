@@ -34,6 +34,9 @@ router.post(
     body("vehicle.plate")
       .isLength({ min: 3 })
       .withMessage("Plate must be 3 characters long"),
+    body("vehicle.model")
+      .isLength({ min: 3 })
+      .withMessage("Model must be 3 characters long"),
     body("vehicle.capacity")
       .isInt({ min: 1 })
       .withMessage("Capacity must be atleast 1"),

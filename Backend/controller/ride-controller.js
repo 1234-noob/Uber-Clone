@@ -2,6 +2,8 @@ const {
   createRide,
   getFare,
   confirmRides,
+  startRiding,
+  endRiding,
 } = require("../services/ride-service");
 const { validationResult } = require("express-validator");
 const { sendMessageToSocketId } = require("../socket");
@@ -10,6 +12,7 @@ const {
   getAddressCoordinate,
   getCaptainsInTheRadius,
 } = require("../services/maps-service");
+const captain = require("../models/captain");
 const createARide = async (req, res) => {
   const error = validationResult(req);
   if (!error) {
@@ -83,10 +86,10 @@ const confirmRide = async (req, res) => {
     });
   }
 
-  const { rideId } = req.body;
+  const { rideId, captainId } = req.body;
 
   try {
-    const ride = await confirmRides({ _id: rideId });
+    const ride = await confirmRides(rideId, captainId);
 
     sendMessageToSocketId(ride.user.socketId, {
       event: "ride-confirmed",
@@ -102,4 +105,49 @@ const confirmRide = async (req, res) => {
   }
 };
 
-module.exports = { createARide, getRideFare, confirmRide };
+const startRide = async (req, res) => {
+  const error = validationResult(req);
+  if (!error) {
+    res.status(400).json({
+      error: error.array(),
+    });
+  }
+
+  const { rideId, otp } = req.query;
+
+  try {
+    const ride = await startRiding(rideId, otp);
+
+    sendMessageToSocketId(ride.user.socketId, {
+      event: "ride-started",
+      data: ride,
+    });
+
+    return res.status(200).json(ride);
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+const endRide = async (req, res) => {
+  const error = validationResult(req);
+  if (!error) {
+    res.status(400).json({
+      error: error.array(),
+    });
+  }
+  const { rideId } = req.body;
+  try {
+    const ride = await endRiding(rideId, req.captain);
+
+    sendMessageToSocketId(ride.user.socketId, {
+      event: "ride-ended",
+      data: ride,
+    });
+
+    return res.status(200).json(ride);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+module.exports = { createARide, getRideFare, confirmRide, startRide, endRide };

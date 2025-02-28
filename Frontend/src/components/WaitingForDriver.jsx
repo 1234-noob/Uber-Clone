@@ -1,4 +1,11 @@
-const WaitingForDriver = ({ setWaitingForDriver }) => {
+const WaitingForDriver = ({ setWaitingForDriver, ride }) => {
+  const getMainAddress = (address) => {
+    if (!address) {
+      return "";
+    } else {
+      return address.split(",")[0];
+    }
+  };
   return (
     <div className="relative w-full">
       <div
@@ -19,9 +26,18 @@ const WaitingForDriver = ({ setWaitingForDriver }) => {
           alt=""
         />
         <div className="text-right">
-          <h2 className="text-lg font-medium">Chinmay</h2>
-          <h4 className="text-xl font-semibold -mt-1 -mb-1">MH-04-AB-1234</h4>
-          <p className="text-sm text-gray-600">Maruti Suzuki WagnorR</p>
+          <h2 className="text-base font-medium capitalize">
+            {ride?.captain?.fullname.firstname +
+              " " +
+              ride?.captain?.fullname.lastname}
+          </h2>
+          <h4 className="text-lg font-semibold -mt-1 -mb-1">
+            {ride?.captain?.vehicle.plate}
+          </h4>
+          <p className="text-sm text-gray-600">
+            {ride?.captain?.vehicle.model}
+          </p>
+          <h1 className="text-sm font-semibold">Otp-{ride?.otp}</h1>
         </div>
       </div>
       <div className="flex flex-col gap-5 justify-between items-center">
@@ -29,21 +45,25 @@ const WaitingForDriver = ({ setWaitingForDriver }) => {
           <div className="flex items-center gap-5 p-3 border-b-2 border-gray-100">
             <i className="text-lg ri-user-location-fill"></i>
             <div>
-              <h3 className="text-lg font-medium">562/11-A</h3>
-              <p className="text-sm text-gray-600">Grant Road,Mumbai</p>
+              <h3 className="text-lg font-medium">
+                {getMainAddress(ride?.pickup)}
+              </h3>
+              <p className="text-sm text-gray-600">{ride?.pickup}</p>
             </div>
           </div>
           <div className="flex items-center gap-5 p-3 border-b-2 border-gray-100">
             <i className="text-lg ri-map-pin-2-fill"></i>
             <div>
-              <h3 className="text-lg font-medium">562/11-A</h3>
-              <p className="text-sm text-gray-600">Grant Road,Mumbai</p>
+              <h3 className="text-lg font-medium">
+                {getMainAddress(ride?.destination)}
+              </h3>
+              <p className="text-sm text-gray-600">{ride?.destination}</p>
             </div>
           </div>
           <div className="flex items-center gap-5 p-3 ">
             <i className="text-lg ri-currency-fill"></i>
             <div>
-              <h3 className="text-lg font-medium">&#8377; 193.50</h3>
+              <h3 className="text-lg font-medium">&#8377; {ride?.fare}</h3>
               <p className="text-sm text-gray-600">Cash</p>
             </div>
           </div>
