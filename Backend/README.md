@@ -907,3 +907,186 @@ Create a new ride request with specified pickup and destination locations.
   "message": "Error creating ride"
 }
 ```
+
+### Confirm Ride Endpoint
+
+**Endpoint:** POST /ride/confirm
+
+**Description:**  
+Confirms a ride request. Requires the ride ID and captain ID. The ride status is updated to "confirmed" and the requested captain details are associated with the ride.
+
+**Request:**
+
+- **Headers:** Bearer Token required (captain)
+- **Content-Type:** application/json
+- **Body:**
+
+```json
+{
+  "rideId": "string (MongoId)",
+  "captainId": "string (MongoId)"
+}
+```
+
+**Success Response:**
+
+- **Status Code:** 200 OK
+- **Body:**
+
+```json
+{
+  "ride": {
+    "_id": "string",
+    "user": { "socketId": "string" /* ...other user details... */ },
+    "pickup": "string",
+    "destination": "string",
+    "fare": "number",
+    "status": "confirmed",
+    "otp": "string",
+    "captain": {
+      "_id": "string",
+      "fullname": { "firstname": "string", "lastname": "string" },
+      "email": "string"
+      // ...other captain details...
+    }
+  }
+}
+```
+
+**Error Responses:**
+
+- **Status Code:** 400 Bad Request
+
+```json
+{
+  "error": [{ "msg": "Invalid ride id", "param": "rideId", "location": "body" }]
+}
+```
+
+- **Status Code:** 500 Server Error
+
+```json
+{ "message": "Ride not found" }
+```
+
+### Start Ride Endpoint
+
+**Endpoint:** GET /ride/start-ride
+
+**Description:**  
+Starts a confirmed ride. Requires the ride ID and a 4-digit OTP provided as query parameters. If the OTP is valid, the ride status is updated to "ongoing" and the OTP is cleared.
+
+**Request:**
+
+- **Headers:** Bearer Token required (captain)
+- **Query Parameters:**
+
+```json
+{
+  "rideId": "string (MongoId)",
+  "otp": "number (4 digits)"
+}
+```
+
+**Success Response:**
+
+- **Status Code:** 200 OK
+- **Body:**
+
+```json
+{
+  "ride": {
+    "_id": "string",
+    "user": { "socketId": "string" /* ...other user details... */ },
+    "pickup": "string",
+    "destination": "string",
+    "fare": "number",
+    "status": "ongoing",
+    "otp": "",
+    "captain": {
+      "_id": "string",
+      "fullname": { "firstname": "string", "lastname": "string" },
+      "email": "string"
+      // ...other captain details...
+    }
+  }
+}
+```
+
+**Error Responses:**
+
+- **Status Code:** 400 Bad Request
+
+```json
+{
+  "error": [
+    { "msg": "Invalid ride id", "param": "rideId", "location": "query" }
+  ]
+}
+```
+
+- **Status Code:** 500 Server Error
+
+```json
+{ "message": "Invalid OTP" }
+```
+
+### End Ride Endpoint
+
+**Endpoint:** POST /ride/end-ride
+
+**Description:**  
+Ends an ongoing ride. The authenticated captain must provide the ride ID. The ride status is updated to "complete."
+
+**Request:**
+
+- **Headers:** Bearer Token required (captain)
+- **Content-Type:** application/json
+- **Body:**
+
+```json
+{
+  "rideId": "string (MongoId)"
+}
+```
+
+**Success Response:**
+
+- **Status Code:** 200 OK
+- **Body:**
+
+```json
+{
+  "ride": {
+    "_id": "string",
+    "user": { "socketId": "string" /* ...other user details... */ },
+    "pickup": "string",
+    "destination": "string",
+    "fare": "number",
+    "status": "complete",
+    "otp": "string",
+    "captain": {
+      "_id": "string",
+      "fullname": { "firstname": "string", "lastname": "string" },
+      "email": "string"
+      // ...other captain details...
+    }
+  }
+}
+```
+
+**Error Responses:**
+
+- **Status Code:** 400 Bad Request
+
+```json
+{
+  "error": [{ "msg": "Invalid ride id", "param": "rideId", "location": "body" }]
+}
+```
+
+- **Status Code:** 500 Server Error
+
+```json
+{ "message": "Ride not ongoing" }
+```

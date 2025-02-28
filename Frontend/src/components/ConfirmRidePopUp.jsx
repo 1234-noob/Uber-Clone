@@ -11,7 +11,7 @@ const ConfirmRidePopUp = ({
   const [otp, setOtp] = useState(null);
 
   const navgigate = useNavigate();
-  console.log(ride);
+
 
   const submitHandler = async (e) => {
     e.preventDefault();

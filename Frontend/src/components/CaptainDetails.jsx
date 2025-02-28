@@ -5,6 +5,7 @@ const CaptainDetails = () => {
 
   return (
     <>
+    
       <div className="flex items-center justify-between">
         <div className="flex items-center justify-start gap-3">
           <img
