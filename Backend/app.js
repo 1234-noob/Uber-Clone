@@ -10,7 +10,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://uber-clone-frontend-ltpt.onrender.com",
     methods: "GET,POST",
   })
 );
