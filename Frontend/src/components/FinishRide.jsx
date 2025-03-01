@@ -1,5 +1,4 @@
 import axios from "axios";
-import { headers } from "next/headers";
 
 import { useNavigate } from "react-router-dom";
 const FinishRide = ({ setFinishRidePanel, rideData }) => {
