@@ -161,7 +161,7 @@ const CaptainSignup = () => {
               value={vehicleModel}
               onChange={(e) => setVehicleModel(e.target.value)}
               className="bg-[#eeeeee] w-1/2 outline-none  border-gray-400 rounded py-2 px-4 border  text-base placeholder:text-sm"
-              type="number"
+              type="texts"
               required
               placeholder="Vehicle Model"
             />

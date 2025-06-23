@@ -29,7 +29,7 @@ const Home = () => {
   const [vehicleType, setVehicleType] = useState(null);
   const [ride, setRide] = useState({});
   const { userData } = useContext(UserDataContext);
-  const { sendMessage, reciveMessage, socket } = useContext(SocketDataContext);
+  const { sendMessage, socket } = useContext(SocketDataContext);
   const vehiclePanelRef = useRef(null);
   const vehicleFoundRef = useRef(null);
   const confirmedRideRef = useRef(null);

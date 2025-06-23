@@ -8,12 +8,7 @@ const mapsRoutes = require("./routes/maps-routes");
 const rideRoutes = require("./routes/ride-routes");
 const app = express();
 
-app.use(
-  cors({
-    origin: "https://uber-clone-frontend-ltpt.onrender.com",
-    methods: "GET,POST",
-  })
-);
+app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

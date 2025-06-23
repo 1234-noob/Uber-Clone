@@ -12,7 +12,7 @@ const {
   getAddressCoordinate,
   getCaptainsInTheRadius,
 } = require("../services/maps-service");
-const captain = require("../models/captain");
+
 const createARide = async (req, res) => {
   const error = validationResult(req);
   if (!error) {

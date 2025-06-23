@@ -50,8 +50,8 @@ const loginUser = async (req, res) => {
       });
     }
     const token = await user.genAuthToken();
-
-    return res.status(200).cookie("token", token).json({
+    res.cookie("isLoggedIn", true);
+    return res.status(200).json({
       token,
       user,
     });

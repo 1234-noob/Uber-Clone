@@ -1,6 +1,4 @@
 const mongoose = require("mongoose");
-const captain = require("./captain");
-const user = require("../models/user");
 
 const rideSchema = new mongoose.Schema({
   user: {

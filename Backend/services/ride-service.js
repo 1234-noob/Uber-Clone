@@ -2,7 +2,7 @@ const rideModel = require("../models/ride");
 const captainModel = require("../models/captain");
 const { getDistanceTime } = require("../services/maps-service");
 const otpGenerator = require("otp-generator");
-const captain = require("../models/captain");
+
 const getFare = async (pickup, destination) => {
   if (!pickup || !destination) {
     throw new Error("Pickup and Destination are required");
