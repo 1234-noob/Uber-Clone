@@ -25,7 +25,7 @@ const CaptainSignup = () => {
       email,
       password,
       vehicle: {
-        model: model,
+        model: vehicleModel,
         color: color,
         plate: plate,
         capacity: capacity,
